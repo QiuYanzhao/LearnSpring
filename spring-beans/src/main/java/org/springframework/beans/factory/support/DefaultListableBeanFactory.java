@@ -940,7 +940,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			// 获取合并后的BeanDefinition
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 
+			// 非抽象的BeanDefinition、单例的、非懒加载的才会在这里加载Bean对象
+			/*
+			 * 抽象的BeanDefinition不会实例化Bean，一般用于给子BeanDefinition继承，继承父BeanDefinition的某些属性
+			 */
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
+				// 如果是FactoryBean，需要特殊处理
 				if (isFactoryBean(beanName)) {
 					// 获取FactoryBean对象
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
@@ -953,6 +958,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 									getAccessControlContext());
 						}
 						else {
+							// 判断是否该类是否实现了SmartFactoryBean
+							/*
+							 * SmartFactoryBean接口的作用是：可以让我们自定义FactoryBean的创建时机
+							 * 实现SmartFactoryBean接口的类，可以通过重写isEagerInit()方法来控制FactoryBean的创建时机
+							 * 如果返回true，则在Spring容器启动时就会创建FactoryBean对象
+							 * 默认返回false，只有在调用getBean()方法时才会创建FactoryBean对象
+							 */
 							isEagerInit = (factory instanceof SmartFactoryBean &&
 									((SmartFactoryBean<?>) factory).isEagerInit());
 						}
@@ -972,6 +984,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// 所有的非懒加载单例Bean都创建完了后
 		// Trigger post-initialization callback for all applicable beans...
 		for (String beanName : beanNames) {
+			// 从单例池中拿出单例对象
 			Object singletonInstance = getSingleton(beanName);
 			if (singletonInstance instanceof SmartInitializingSingleton) {
 				StartupStep smartInitialize = this.getApplicationStartup().start("spring.beans.smart-initialize")
