@@ -312,6 +312,12 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return a corresponding Set of autodetected bean definitions
 	 */
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
+		/*
+		 * 判断resources目录下是否存在spring.components文件
+		 * 该文件的内容为 com.xxx.xxx.XxxService=org.springframework.stereotype.Commponent
+		 * 也就是说，该文件中记录了哪些类是Bean，哪些类不是Bean
+		 * 通过读取该文件，可以加快扫描的效率，但是这样用的很少
+		 */
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
 			return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
 		}
@@ -425,6 +431,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
 
+			// 获取文件的file对象集合
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 
 			boolean traceEnabled = logger.isTraceEnabled();
@@ -435,12 +442,20 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				}
 				if (resource.isReadable()) {
 					try {
+						// 读取类信息
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
-						// excludeFilters、includeFilters判断
+						// excludeFilters、includeFilters判断，该类是否是一个bean
 						if (isCandidateComponent(metadataReader)) { // @Component-->includeFilters判断
+							// 生成BeanDefinition
 							ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
+							// 设置资源
 							sbd.setSource(resource);
 
+							/*
+							 * 这里判断该类是顶层类还是一个内部类，是否是抽象类或者接口
+							 * 抽象类和内部类都无法单独实例化为bean
+							 * 除非内部有个方法上面有@Lookup注解，这个方法返回一个bean
+							 */
 							if (isCandidateComponent(sbd)) {
 								if (debugEnabled) {
 									logger.debug("Identified candidate component class: " + resource);
@@ -506,6 +521,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		// 符合includeFilters的会进行条件匹配，通过了才是Bean，也就是先看有没有@Component，再看是否符合@Conditional
 		for (TypeFilter tf : this.includeFilters) {
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
+				// 这里根据@Conditional注解判断是否符合条件，符合条件才是Bean
 				return isConditionMatch(metadataReader);
 			}
 		}
