@@ -964,6 +964,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							 * 实现SmartFactoryBean接口的类，可以通过重写isEagerInit()方法来控制FactoryBean的创建时机
 							 * 如果返回true，则在Spring容器启动时就会创建FactoryBean对象
 							 * 默认返回false，只有在调用getBean()方法时才会创建FactoryBean对象
+							 * （factoryBean有一个beanDefinition，但是有两个bean对象，分别是他本身和重写的
+							 * getObject方法返回的bean对象，isEagerInit方法控制的就是什么时候创建getObject方法返回
+							 * 的bean对象）
 							 */
 							isEagerInit = (factory instanceof SmartFactoryBean &&
 									((SmartFactoryBean<?>) factory).isEagerInit());

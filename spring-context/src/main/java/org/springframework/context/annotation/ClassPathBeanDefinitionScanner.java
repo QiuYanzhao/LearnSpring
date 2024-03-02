@@ -275,8 +275,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
 			for (BeanDefinition candidate : candidates) {
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
+				// 设置scope信息（单例/多例）
 				candidate.setScope(scopeMetadata.getScopeName());
-
+				// 设置beanName
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
 
 				if (candidate instanceof AbstractBeanDefinition) {
