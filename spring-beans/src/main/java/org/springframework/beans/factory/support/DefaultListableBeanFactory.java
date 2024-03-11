@@ -551,6 +551,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		if (resolvedBeanNames != null) {
 			return resolvedBeanNames;
 		}
+		// 第一次拿的时候没有缓存，就去拿，然后缓存起来
 		resolvedBeanNames = doGetBeanNamesForType(ResolvableType.forRawClass(type), includeNonSingletons, true);
 		if (ClassUtils.isCacheSafe(type, getBeanClassLoader())) {
 			cache.put(type, resolvedBeanNames);
