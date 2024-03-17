@@ -1203,6 +1203,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Shortcut when re-creating the same bean...
+		// 【入口】 推断构造方法
 		// 一个原型BeanDefinition，会多次来创建Bean，那么就可以把该BeanDefinition所要使用的构造方法缓存起来，避免每次都进行构造方法推断
 		boolean resolved = false;
 		boolean autowireNecessary = false;
@@ -1227,7 +1228,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
-		// 如果没有找过构造方法，那么就开始找了
+		// 如果没有找过构造方法，那么就开始推断了
 
 		// Candidate constructors for autowiring?
 		// 提供一个扩展点，可以利用SmartInstantiationAwareBeanPostProcessor来控制用beanClass中的哪些构造方法

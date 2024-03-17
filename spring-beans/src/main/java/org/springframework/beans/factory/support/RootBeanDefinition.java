@@ -100,7 +100,10 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	/** Package-visible field that marks the constructor arguments as resolved. */
 	boolean constructorArgumentsResolved = false;
 
-	/** Package-visible field for caching fully resolved constructor arguments. */
+	/**
+	 * Package-visible field for caching fully resolved constructor arguments.
+	 * 这个属性缓存bean构造方法的参数值
+	 * */
 	@Nullable
 	Object[] resolvedConstructorArguments;
 
