@@ -959,6 +959,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		try {
+			// 【核心】 通过HandlerMapping找到HandlerExecutionChain，然后通过HandlerAdapter执行Handler
 			doDispatch(request, response);
 		}
 		finally {
@@ -1032,12 +1033,14 @@ public class DispatcherServlet extends FrameworkServlet {
 			Exception dispatchException = null;
 
 			try {
+				// 检查是否是文件上传请求
 				processedRequest = checkMultipart(request);
 				multipartRequestParsed = (processedRequest != request);
 
 				// 进行映射
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
+					// 404
 					noHandlerFound(processedRequest, response);
 					return;
 				}
@@ -1061,6 +1064,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Actually invoke the handler.
+				// 调用真正的方法， 比如Controller中的某个方法，得到ModelAndView对象
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 				if (asyncManager.isConcurrentHandlingStarted()) {
@@ -1261,6 +1265,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			/** 拿到所有handlerMappings （容器启动阶段初始化：拿到所有实现了HandlerMapping的Bean）
 			 * @see DispatcherServlet#initHandlerMappings
 			 * 测试发现： 不同的HandlerMapping可以有相同path, 谁先解析到就用哪个
+			 * BeanNameUrlHandlerMapping的优先级最高
 			 * */
 			for (HandlerMapping mapping : this.handlerMappings) {
 				HandlerExecutionChain handler = mapping.getHandler(request);

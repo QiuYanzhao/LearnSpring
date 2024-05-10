@@ -527,6 +527,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 
 		try {
+			// 创建spring容器对象
 			this.webApplicationContext = initWebApplicationContext();
 			// 空方法，无实现·
 			initFrameworkServlet();
@@ -584,7 +585,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			wac = findWebApplicationContext();
 		}
 		if (wac == null) {
-			// xml会在这里创建
+			// xml会在这里创建spring容器
 			wac = createWebApplicationContext(rootContext);
 		}
 
@@ -645,6 +646,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext
 	 */
 	protected WebApplicationContext createWebApplicationContext(@Nullable ApplicationContext parent) {
+		// 确定创建的容器类型为XmlWebApplicationContext.class
 		Class<?> contextClass = getContextClass();
 		if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
 			throw new ApplicationContextException(
@@ -657,6 +659,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 		wac.setEnvironment(getEnvironment());
 		wac.setParent(parent);
+		// 去拿配置文件
 		String configLocation = getContextConfigLocation();
 		if (configLocation != null) {
 			wac.setConfigLocation(configLocation);
@@ -998,6 +1001,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			// tomcat的service方法 -> doGet/doPost/doPut/doDelete/ -> processRequest -> doService
+			// 【入口】 tomcat处理请求的入口
 			doService(request, response);
 		}
 		catch (ServletException | IOException ex) {

@@ -103,7 +103,7 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 	public void invokeAndHandle(ServletWebRequest webRequest, ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
 
-		/*真正的调用我们的目标对象 很重要 很重要*/
+		/*【核心】真正的调用我们的目标对象 很重要 很重要*/
 		Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
 		// 设置相关的返回状态
 		setResponseStatus(webRequest);
