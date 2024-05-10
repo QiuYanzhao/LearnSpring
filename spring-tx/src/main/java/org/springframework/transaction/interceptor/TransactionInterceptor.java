@@ -111,7 +111,7 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 	@Nullable
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 //		System.out.println("执行事务");
-
+		// 【入口】执行事务入口
 		// Work out the target class: may be {@code null}.
 		// The TransactionAttributeSource should be passed the target class
 		// as well as the method, which may be from an interface.
